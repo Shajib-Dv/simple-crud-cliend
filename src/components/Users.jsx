@@ -1,11 +1,12 @@
 /** @format */
 
-import React from "react";
-import { useLoaderData } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useLoaderData } from "react-router-dom";
 import Navbar from "./Navbar";
 
 const Users = () => {
-  const users = useLoaderData();
+  const loadedUsers = useLoaderData();
+  const [users, setUsers] = useState(loadedUsers);
   //   console.log(users);
 
   const handleDelete = (_id) => {
@@ -16,8 +17,10 @@ const Users = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        if (data.deletedCount === 1) {
+        if (data.deletedCount > 0) {
           alert("Delete successful");
+          const remainingUser = users.filter((user) => user._id !== _id);
+          setUsers(remainingUser);
         }
       })
       .catch((error) => console.log(error));
@@ -33,6 +36,9 @@ const Users = () => {
             <p key={user._id}>
               {" "}
               Name: {user.name} Email: {user.email}{" "}
+              <Link to={`/update/${user._id}`}>
+                <button>Update</button>
+              </Link>
               <button onClick={() => handleDelete(user._id)}>X</button>
             </p>
           ))}
